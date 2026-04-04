@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+.primary {
+  @apply p-3 rounded-sm font-bold bg-green-400 border border-green-950 text-green-950  shadow-lg;
+}
+

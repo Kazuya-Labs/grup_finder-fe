@@ -1,0 +1,34 @@
+[
+  {
+    "name": "all",
+    "value": "all"
+  },
+  {
+    "name": "bisnis",
+    "value": "bisnis"
+  },
+  {
+    "name": "teknologi",
+    "value": "teknologi"
+  },
+  {
+    "name": "crypto",
+    "value": "crypto"
+  },
+  {
+    "name": " berita",
+    "value": "berita"
+  },
+  {
+    "name": "hiburan",
+    "value": "hiburan"
+  },
+  {
+    "name": "entertain",
+    "value": "entertain"
+  },
+  {
+    "name": "edukasi",
+    "value": "edukasi"
+  }
+]
