@@ -15,7 +15,7 @@ function Button({
   const combinate = `${VARIANT_STYLES[variant]} ${baseStyles} ${SIZE_STYLES[size]}`;
   return (
     <button
-      className={`${className} ${combinate} aria-disabled:bg-gray-800 aria-disabled:text-gray-100 `}
+      className={`${className} ${combinate} aria-disabled:bg-gray-800 aria-disabled:text-gray-100 transition-all `}
       aria-disabled={disabled}
       onClick={onClick}
     >

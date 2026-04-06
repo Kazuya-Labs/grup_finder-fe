@@ -4,6 +4,7 @@ import Button from "../atom/button";
 import Navbar from "../fragments/Navbar";
 import { Search } from "lucide-react";
 import { PlusCircleIcon } from "lucide-react";
+import Footer from "../fragments/Footer";
 
 function Home() {
   return (
@@ -52,11 +53,15 @@ function Home() {
           bergabung. Gratis dan mudah!
         </p>
 
-        <a href="/add" className="flex primary justify-center items-center my-3">
+        <a
+          href="/add"
+          className="flex primary justify-center items-center my-3"
+        >
           {" "}
-          Daftarkan Grup <PlusCircleIcon size={18} className="ml-0.5"/>{" "}
+          Daftarkan Grup <PlusCircleIcon size={18} className="ml-0.5" />{" "}
         </a>
       </section>
+      <Footer />
     </div>
   );
 }

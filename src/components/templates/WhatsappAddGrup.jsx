@@ -1,20 +1,65 @@
-import React from "react";
+import { useState, useCallback } from "react";
+import { AlertCircleIcon, Book, Link2 } from "lucide-react";
 import { Helmet } from "react-helmet-async";
 import Navbar from "../fragments/Navbar";
 import Input from "../atom/input/Index";
-import { Book, Link2 } from "lucide-react";
 import Button from "../atom/button";
-import Header from "../fragments/Header";
+import Alert from "../atom/alert/Index";
+import Loading from "../ui/Loading";
 import Filters from "../ui/Filters";
 import listKategory from "../atom/listKategory.json";
 import listNegara from "../atom/listNegara.json";
+
+const filtering = (data) => {
+  return data.filter((v) => v.value !== "all");
+};
+
+const postdata = async (payload) => {
+  try {
+    const res = await fetch("http://localhost:3000/api/addgrup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+    return res.json();
+  } catch (error) {
+    throw error;
+    return {
+      status: false,
+    };
+  }
+};
+
 function WhatsappAddGrup() {
-  const [kategory, setKategory] = React.useState("all");
-  const [negara, setNegara] = React.useState("all");
-  const [linkGrup,setLinkGrup] = React.useState("")
+  const [kategory, setKategory] = useState("lainya"); // list kategory kecuali all
+  const [negara, setNegara] = useState("lainya"); // list negara kecuali all
+  const [linkGrup, setLinkGrup] = useState("");
+  const [isloading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState(null); // null | true | false
+
+  const handleSUbmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+
+      setIsLoading(true);
+      setStatus(null);
+
+      const res = await postdata({
+        link: linkGrup,
+        kategori: kategory,
+        negara,
+      });
+
+      setStatus(res.status);
+      setIsLoading(false);
+    },
+    [status, isloading],
+  );
 
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen  w-full">
       {/* SEO */}
       <Helmet>
         <title>
@@ -41,11 +86,28 @@ function WhatsappAddGrup() {
         </p>
 
         {/* FORM */}
-        <form className="border border-green-900 p-6 rounded-md w-full max-w-md mt-6 shadow-sm">
+        <form
+          className="border border-green-900 p-6 rounded-md w-full max-w-md mt-6 shadow-sm"
+          onSubmit={handleSUbmit}
+        >
           <div className="text-xl mb-4 bg-green-100 text-green-950 flex justify-center items-center font-semibold p-4 rounded-md">
             <Book className="mr-2" />
             Form Tambah Grup WhatsApp
           </div>
+
+          {isloading && <Loading />}
+          {status !== null && (
+            <Alert
+              variant={status ? "primary" : "danger"}
+              className={status + " p-2"}
+            >
+              {" "}
+              <AlertCircleIcon size={24} className="mx-3" />{" "}
+              {status
+                ? "Grup berhasil didaftarkan"
+                : "Terjadi kesaalahan Periksa Kembali Link Anda"}
+            </Alert>
+          )}
 
           <Input
             type="text"
@@ -54,14 +116,15 @@ function WhatsappAddGrup() {
             placeholder={"https://chat.whatsapp.com/XXXXXXXX"}
             classInput={"w-full"}
             icon={<Link2 />}
-            onChange={(e)=> setLinkGrup(e.target.value)}
+            onChange={(e) => setLinkGrup(e.target.value)}
           />
 
           {/* NEGARA */}
           <div className="text-green-950 font-semibold mt-4">
             <Filters
               label={"Negara"}
-              data={listNegara}
+              value={negara}
+              data={filtering(listNegara)}
               onChange={(e) => setNegara(e.target.value)}
             />
           </div>
@@ -70,12 +133,19 @@ function WhatsappAddGrup() {
           <div className="text-green-950 font-semibold mt-4">
             <Filters
               label={"Kategori Grup"}
-              data={listKategory}
+              value={kategory}
+              data={filtering(listKategory)}
               onChange={(e) => setKategory(e.target.value)}
             />
           </div>
 
-          <Button className="w-full mt-6">Daftarkan Grup Sekarang</Button>
+          <Button
+            className="w-full mt-6"
+            onClick={handleSUbmit}
+            disabled={isloading}
+          >
+            Daftarkan Grup Sekarang
+          </Button>
 
           {/* TRUST + SEO */}
           <p className="text-xs text-gray-500 mt-4 text-center">

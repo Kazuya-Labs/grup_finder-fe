@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
-  LucideFileWarning,
-  LucideGroup,
   Search,
-  Key,
   Globe,
+  DoorOpen,
+  KeyRoundIcon,
+  AlertTriangle,
 } from "lucide-react";
+
 import Button from "../atom/button";
 import Card from "../fragments/Card";
 import Navbar from "../fragments/Navbar";
@@ -15,97 +16,111 @@ import Input from "../atom/input/Index";
 import listNegara from "../atom/listNegara.json";
 import listKategory from "../atom/listKategory.json";
 
-const Data = [
-  {
-    link: "./vite.svg",
-    desc: "lorem ipsum dididid",
-    title: "abc defI",
-  },
-  {
-    link: "./vite.svg",
-    desc: "lorem ipsum dididid",
-    title: "abc defI",
-  },
-  {
-    link: "./vite.svg",
-    desc: "lorem ipsum dididid",
-    title: "abc defi abc abc abc ",
-  },
-  {
-    link: "./vite.svg",
-    desc: "lorem ipsum dididid",
-    title: "abc defi",
-  },
-];
-
 function ListGrup() {
-  const [loading, SetLoading] = useState(true);
-  const [listGrup, SetListGrup] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [listGrup, setListGrup] = useState([]);
   const [kategory, setKategory] = useState("all");
   const [negara, setNegara] = useState("all");
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const simulasi = async () =>
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, 5000);
-      });
-
-    return async () => {
-      await simulasi();
-      SetLoading(false);
-      SetListGrup(Data);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `http://localhost:3000/api/list?kategori=${kategory}&negara=${negara}`,
+        );
+        const data = await res.json();
+        setListGrup(data.data || []);
+      } catch (err) {
+        setListGrup([]);
+      } finally {
+        setLoading(false);
+      }
     };
-  }, [negara, kategory]);
+
+    fetchData();
+  }, [kategory, negara]);
+
+  const filteredData = useMemo(() => {
+    if (!searchTerm) return listGrup;
+
+    return listGrup.filter((item) =>
+      item.title?.toLowerCase().includes(searchTerm.toLowerCase()),
+    );
+  }, [listGrup, searchTerm]);
 
   return (
-    <div className="container bg-green-50 overflow-hidden  min-h-screen min-w-full">
+    <div className="bg-green-50 min-h-screen">
       <Navbar />
-      <div className="m-3">
+
+      {/* SEARCH */}
+      <div className="p-3">
         <Input
           type="search"
-          label={"Search"}
-          placeholder={"Cari Grup Sesuai Kebutuhanmu"}
-          icon={<Search />}
+          label="Search"
+          placeholder="Cari Grup..."
+          icon={<Search className="w-4 h-4" />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      <div className="w-5/6 m-4 grid grid-cols-2 gap-2">
-        <Filters label={"Negara : "} data={listNegara} onChange={(e) => setNegara(e.target.value)}/>{" "}
-        <Filters label={"Kategory :"} data={listKategory} onChange={(e) => setKategory(e.target.value)}/>
+
+      {/* FILTER */}
+      <div className="w-full md:w-2/3 p-3 grid grid-cols-2 gap-2">
+        <Filters
+          label="Negara"
+          data={listNegara}
+          onChange={(e) => setNegara(e.target.value)}
+        />
+        <Filters
+          label="Kategori"
+          data={listKategory}
+          onChange={(e) => setKategory(e.target.value)}
+        />
       </div>
+
+      {/* LOADING */}
       {loading && <Loading />}
-      {listGrup && (
-        <div className="grid md:grid-cols-2 grid-cols-1 gap-3">
-          {listGrup.map((v, i) => (
-            <Card key={i}>
-              <Card.img img={{ link: v.link }}>
+
+      {/* LIST */}
+      {!loading && (
+        <div className="grid md:grid-cols-2 gap-3 p-3">
+          {filteredData.map((v) => (
+            <Card key={v.id || v.link}>
+              <Card.img img={{ link: v.image_url }}>
                 <div className="flex flex-col gap-1">
-                  <div className="text-sm flex text-green-900 bg-green-400 p-1 rounded-md">
-                    <Key size={18} className="mx-0.5" /> bussines
+                  <div className="badge justify-center items-center flex p-1 bg-green-400 font-sans border border-green-950 rounded-sm">
+                    <KeyRoundIcon className="w-3 h-3 mr-1" />
+                    {v.kategori}
                   </div>
-                  <div className="text-sm flex text-green-900 bg-green-400 p-1 rounded-md">
-                    <Globe size={18} className="mx-0.5" /> Indonesia
+                  <div className="badge justify-center items-center flex p-1 bg-green-400 font-sans border border-green-950 rounded-sm">
+                    <Globe className="w-3 h-3 mr-1" />
+                    {v.negara}
                   </div>
                 </div>
               </Card.img>
+
               <Card.body>
-                <Card.title> {v.title} </Card.title>
-                {v.desc}
-                <div className="mt-2 flex gap-2 container">
-                  <Button
-                    size="sm"
-                    rounded="md"
-                    className="justify-center flex items-center"
-                  >
-                    {" "}
-                    <LucideGroup className="mr-1" /> Gabung{" "}
+                <Card.title>{v?.title || "unknown"}</Card.title>
+
+                <span className="text-xs text-gray-500">
+                  {v.created_at?.split("T")[0]}
+                </span>
+
+                <div className="mt-2 flex gap-2">
+                  <Button size="sm" className="flex items-center">
+                    <DoorOpen className="w-4 h-4 mr-1" />
+                    Gabung
                   </Button>
+
                   <Button
-                    rounded="md"
                     size="sm"
-                    className="justify-center flex items-center"
+                    variant="danger"
+                    className="flex items-center"
                   >
-                    {" "}
-                    <LucideFileWarning className="mr-1 px-1" /> Laporkan{" "}
+                    <AlertTriangle className="w-4 h-4 mr-1" />
+                    Laporkan
                   </Button>
                 </div>
               </Card.body>
