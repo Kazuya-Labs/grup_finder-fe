@@ -26,8 +26,6 @@ function Filters({ data = [], label, value, onChange }) {
           transition
         "
       >
-        <option value="">Pilih {label}</option>
-
         {data.map((item, i) => (
           <option value={item.value} key={i}>
             {item.name || item.value}

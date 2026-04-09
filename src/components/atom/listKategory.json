@@ -24,13 +24,22 @@
     "value": "hiburan"
   },
   {
-    "name": "entertain",
-    "value": "entertain"
+    "name": "entertaiment",
+    "value": "entertaiment"
   },
   {
     "name": "edukasi",
     "value": "edukasi"
-  },  {
+  },
+  {
+    "name": "gaming",
+    "value": "gaming"
+  },
+  {
+    "name": "ekonomi",
+    "value": "ekonomi"
+  },
+  {
     "name": "lainya",
     "value": "lainya"
   }

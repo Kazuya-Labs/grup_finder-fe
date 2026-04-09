@@ -27,7 +27,7 @@ function Input(
 
         <input
           value={value}
-          className={`w-full rounded-md p-2 border focus-within:ring-opacity-0 border-green-600 text-green-900 ${icon ? "pl-11" : ""} ${classInput}`}
+          className={`${classInput} w-full rounded-md p-2 border focus-within:ring-opacity-0 border-green-600 text-green-900 ${icon ? "pl-11" : ""} `}
           placeholder={placeholder}
           type={type}
           onChange={onChange}

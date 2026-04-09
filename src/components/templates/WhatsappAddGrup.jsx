@@ -9,27 +9,11 @@ import Loading from "../ui/Loading";
 import Filters from "../ui/Filters";
 import listKategory from "../atom/listKategory.json";
 import listNegara from "../atom/listNegara.json";
+import Footer from "../fragments/Footer";
+import addGrupApi from "../../api/addGrup.js";
 
 const filtering = (data) => {
   return data.filter((v) => v.value !== "all");
-};
-
-const postdata = async (payload) => {
-  try {
-    const res = await fetch("http://localhost:3000/api/addgrup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-    return res.json();
-  } catch (error) {
-    throw error;
-    return {
-      status: false,
-    };
-  }
 };
 
 function WhatsappAddGrup() {
@@ -46,13 +30,13 @@ function WhatsappAddGrup() {
       setIsLoading(true);
       setStatus(null);
 
-      const res = await postdata({
+      const res = await addGrupApi({
         link: linkGrup,
         kategori: kategory,
         negara,
       });
 
-      setStatus(res.status);
+      setStatus(res.ok);
       setIsLoading(false);
     },
     [status, isloading],
@@ -175,6 +159,7 @@ function WhatsappAddGrup() {
           </p>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
